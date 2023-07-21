@@ -4,7 +4,7 @@ import type { Kudo as IKudo, Profile, Prisma } from '@prisma/client';
 import { json } from '@remix-run/node';
 import { useLoaderData, Outlet } from '@remix-run/react';
 
-import { requireUserId } from '~/utils/auth.server';
+import { requireUserId, getUser } from '~/utils/auth.server';
 import { getOtherUsers } from '~/utils/user.server';
 import { getFilteredKudos, getRecentKudos } from '~/utils/kudos.server';
 
@@ -60,11 +60,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const kudos = await getFilteredKudos(userId, sortOptions, textFilter);
   const recentKudos = await getRecentKudos();
-  return json({ users, kudos, recentKudos });
+  const user = await getUser(request);
+
+  return json({ users, kudos, recentKudos, user });
 };
 
 export default function Home() {
-  const { users, kudos, recentKudos } = useLoaderData();
+  const { users, kudos, recentKudos, user } = useLoaderData();
 
   return (
     <Layout>
@@ -72,7 +74,7 @@ export default function Home() {
       <div className="h-full flex">
         <UserPanel users={users} />
         <div className="flex-1 flex flex-col">
-          <SearchBar />
+          <SearchBar profile={user.profile} />
           <div className="flex-1 flex">
             <div className="w-full p-10 flex flex-col gap-y-4">
               {kudos.map((kudo: KudoWithProfile) => (

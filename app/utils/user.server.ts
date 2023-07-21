@@ -1,3 +1,4 @@
+import type { Profile } from '@prisma/client';
 import type { RegisterForm } from './types.server';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma.server';
@@ -38,4 +39,24 @@ export const getUserById = async (userId: string) => {
       id: userId,
     },
   });
+};
+
+export const updateUser = async (
+  userId: string, 
+  profile: Partial<Profile>
+) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      profile: {
+        update: profile,
+      },
+    },
+  });
+};
+
+export const deleteUser = async (id: string) => {
+  await prisma.user.delete({ where: { id } });
 };

@@ -8,8 +8,9 @@ datasource db {
 }
 
 type Profile {
-  firstName String
-  lastName  String
+  firstName      String
+  lastName       String
+  department     Department? @default(MARKETING)
 }
 
 model User {
@@ -29,19 +30,19 @@ enum Emoji {
   HANDSUP
 }
 
-enum Department {
-  MARKETING
-  SALES
-  ENGINEERING
-  HR
-}
-
 enum Color {
   RED
   GREEN
   YELLOW
   BLUE
   WHITE
+}
+
+enum Department {
+  MARKETING
+  SALES
+  ENGINEERING
+  HR
 }
 
 type KudoStyle {
@@ -55,7 +56,7 @@ model Kudo {
   message     String
   createdAt   DateTime   @default(now())
   style       KudoStyle?
-  author      User       @relation(references: [id], fields: [authorId], "AuthoredKudos")
+  author      User       @relation(references: [id], fields: [authorId], onDelete: Cascade, "AuthoredKudos")
   authorId    String     @db.ObjectId
   recipient   User       @relation(references: [id], fields: [recipientId], "RecievedKudos")
   recipientId String     @db.ObjectId
